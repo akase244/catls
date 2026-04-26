@@ -1,0 +1,20 @@
+services:
+  php-openssl:
+    build: .
+    container_name: php-openssl
+    volumes:
+      - ./certs:/etc/nginx/certs
+
+  web-server:
+    image: nginx:alpine
+    container_name: web-server
+    depends_on:
+      php-openssl:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:443:443"
+      - "127.0.0.1:80:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./html:/usr/share/nginx/html:ro
+      - ./certs:/etc/nginx/certs
